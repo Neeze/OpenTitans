@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="docs/assets/hero_banner.png" alt="OpenTitans Hero" width="100%" />
-
 # 🌌 OpenTitans
 **The Open-Source Framework for Memory-Augmented Sequence Models**
 
@@ -54,42 +52,6 @@ pip install -e .
 
 ---
 
-## 🛠️ Usage
-
-Implementing a Titan-like memory module is as simple as:
-
-```python
-import torch
-from open_titans.modules.memory import NeuralMemory
-
-# Initialize the Neural Memory module
-memory = NeuralMemory(
-    dim = 512,
-    chunk_size = 64,
-    heads = 8,
-    momentum = True
-)
-
-# Dummy input sequence (Batch, SeqLen, Dim)
-x = torch.randn(1, 1024, 512)
-
-# Forward pass: retrieve memories and update state
-retrieved, state = memory(x)
-
-print(f"Retrieved shape: {retrieved.shape}") # (1, 1024, 512)
-```
-
----
-
-## 🗺️ Roadmap
-
-- [ ] **Full TTT-Linear Implementation**: Scaling to billions of parameters.
-- [ ] **Flash-Attention Integration**: For hybrid architectures.
-- [ ] **Pre-trained Weights**: Releasing small-scale models for immediate testing.
-- [ ] **Documentation Site**: Comprehensive API reference and tutorials.
-
----
-
 ## 🤝 Contributing
 
 We are looking for "Titans" to help us build! 🚀
@@ -130,7 +92,3 @@ OpenTitans stands on the shoulders of giants. We acknowledge the authors of the 
 ## 📄 License
 
 OpenTitans is released under the **MIT License**. See [LICENSE](LICENSE) for more details.
-
-<div align="center">
-  Built with ❤️ by the OpenTitans Community.
-</div>
