@@ -1,83 +1,136 @@
-# OpenTitans: The Open-Source Framework for Memory-Augmented Sequence Models
+<div align="center">
 
-## Introduction
+<img src="docs/assets/hero_banner.png" alt="OpenTitans Hero" width="100%" />
 
-OpenTitans is a modular, extensible, and user-friendly framework designed to democratize access to the latest breakthroughs in Memory-Augmented Sequence Models. While Transformers have dominated sequence modeling, their quadratic complexity limits their ability to handle infinite context. Recent research from Google has introduced a new paradigm: models that learn to memorize and optimize their internal state at test time.
+# 🌌 OpenTitans
+**The Open-Source Framework for Memory-Augmented Sequence Models**
 
-OpenTitans provides a unified, HuggingFace-like API to train, evaluate, and deploy these cutting-edge architectures, allowing the community to build their own "Titans".
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![PyTorch 2.0+](https://img.shields.io/badge/pytorch-2.0+-ee4c2c.svg)](https://pytorch.org/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/Neeze/OpenTitans/graphs/commit-activity)
 
-## Features
+---
 
-- **🚀 Efficient Implementations**: Optimized modules for Neural Memory and Test-Time Memorization.
-- **🔗 Associative Scan**: Support for fast sequence processing via associative scans.
-- **🧩 Modular Design**: Easy-to-extend components for research and development.
-- **📊 Benchmarking**: Built-in tools for performance evaluation.
+**Democratizing Test-Time Memorization and Neural Memory Architectures.**
 
-## Quick Start
+[Introduction](#-introduction) • [Features](#-key-features) • [Quick Start](#-quick-start) • [Usage](#-usage) • [Citations](#-citations--acknowledgements)
+
+</div>
+
+## 🌟 Introduction
+
+**OpenTitans** is a modular, high-performance framework designed to implement and explore the next generation of sequence models. While Transformers revolutionized AI, their quadratic context limitations have met their match. 
+
+Inspired by groundbreaking research from Google and other top labs, OpenTitans focuses on **Memory-Augmented Models** that learn to memorize, optimize, and cache their internal states at test time. Our goal is to provide a "HuggingFace-like" experience for researchers and engineers building the future of infinite-context modeling.
+
+---
+
+## 🚀 Key Features
+
+*   **🧠 Neural Memory Modules**: Sophisticated implementations of memory systems that evolve during inference.
+*   **⚡ Associative Scan**: Optimized support for fast sequence processing, breaking the linear bottleneck.
+*   **🛠️ Test-Time Training (TTT)**: Seamless integration of models that optimize their parameters as they consume context.
+*   **🧩 Modular & Extensible**: A clean, object-oriented API that allows you to swap memory models, poolers, and norms with ease.
+*   **📊 Performance Benchmarks**: Built-in tools to measure latency, throughput, and memory efficiency on modern GPUs.
+
+---
+
+## 📦 Quick Start
 
 ### Installation
 
-> [!NOTE]
-> OpenTitans is currently under active development. You can install it directly from the source.
+> [!TIP]
+> We recommend using a virtual environment (venv or conda) for the best experience.
 
 ```bash
+# Clone the repository
 git clone https://github.com/Neeze/OpenTitans.git
 cd OpenTitans
+
+# Install in editable mode with dependencies
 pip install -e .
 ```
 
-## Citations & Acknowledgements
+---
 
-This project is an unofficial implementation. All credit for the theoretical foundations and original architectural designs belongs to the authors of the following papers:
+## 🛠️ Usage
+
+Implementing a Titan-like memory module is as simple as:
+
+```python
+import torch
+from open_titans.modules.memory import NeuralMemory
+
+# Initialize the Neural Memory module
+memory = NeuralMemory(
+    dim = 512,
+    chunk_size = 64,
+    heads = 8,
+    momentum = True
+)
+
+# Dummy input sequence (Batch, SeqLen, Dim)
+x = torch.randn(1, 1024, 512)
+
+# Forward pass: retrieve memories and update state
+retrieved, state = memory(x)
+
+print(f"Retrieved shape: {retrieved.shape}") # (1, 1024, 512)
+```
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] **Full TTT-Linear Implementation**: Scaling to billions of parameters.
+- [ ] **Flash-Attention Integration**: For hybrid architectures.
+- [ ] **Pre-trained Weights**: Releasing small-scale models for immediate testing.
+- [ ] **Documentation Site**: Comprehensive API reference and tutorials.
+
+---
+
+## 🤝 Contributing
+
+We are looking for "Titans" to help us build! 🚀
+
+Whether you want to implement a new paper, optimize a CUDA kernel, or just fix a typo, your contributions are welcome. Check out our [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
+
+---
+
+## 📚 Citations & Acknowledgements
+
+OpenTitans stands on the shoulders of giants. We acknowledge the authors of the following papers for their foundational work:
 
 ```bibtex
 @misc{behrouz2024titanslearningmemorizetest,
       title={Titans: Learning to Memorize at Test Time}, 
       author={Ali Behrouz and Peilin Zhong and Vahab Mirrokni},
       year={2024},
-      eprint={2501.00663},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2501.00663}, 
+      url={https://arxiv.org/abs/2501.00663}
 }
 
 @misc{behrouz2025atlaslearningoptimallymemorize,
       title={ATLAS: Learning to Optimally Memorize the Context at Test Time}, 
       author={Ali Behrouz and Zeman Li and Praneeth Kacham and Majid Daliri and Yuan Deng and Peilin Zhong and Meisam Razaviyayn and Vahab Mirrokni},
       year={2025},
-      eprint={2505.23735},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2505.23735}, 
-}
-
-@misc{behrouz2025nestedlearningillusiondeep,
-      title={Nested Learning: The Illusion of Deep Learning Architectures}, 
-      author={Ali Behrouz and Meisam Razaviyayn and Peilin Zhong and Vahab Mirrokni},
-      year={2025},
-      eprint={2512.24695},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2512.24695}, 
-}
-
-@misc{behrouz2026memorycachingrnnsgrowing,
-      title={Memory Caching: RNNs with Growing Memory}, 
-      author={Ali Behrouz and Zeman Li and Yuan Deng and Peilin Zhong and Meisam Razaviyayn and Vahab Mirrokni},
-      year={2026},
-      eprint={2602.24281},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2602.24281}, 
+      url={https://arxiv.org/abs/2505.23735}
 }
 
 @misc{behrouz2025itsconnectedjourneytesttime,
       title={It's All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization}, 
       author={Ali Behrouz and Meisam Razaviyayn and Peilin Zhong and Vahab Mirrokni},
       year={2025},
-      eprint={2504.13173},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2504.13173}, 
+      url={https://arxiv.org/abs/2504.13173}
 }
 ```
+
+---
+
+## 📄 License
+
+OpenTitans is released under the **MIT License**. See [LICENSE](LICENSE) for more details.
+
+<div align="center">
+  Built with ❤️ by the OpenTitans Community.
+</div>
