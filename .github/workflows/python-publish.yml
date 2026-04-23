@@ -41,7 +41,7 @@ jobs:
       id-token: write
 
     environment:
-      name: pypi
+      name: release
       url: https://pypi.org/project/open-titans/${{ github.event.release.name }}
 
     steps:
