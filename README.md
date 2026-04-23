@@ -78,18 +78,18 @@ OpenTitans stands on the shoulders of giants. We acknowledge the authors of the 
       url={https://arxiv.org/abs/2501.00663}
 }
 
-@misc{behrouz2025atlaslearningoptimallymemorize,
-      title={ATLAS: Learning to Optimally Memorize the Context at Test Time}, 
-      author={Ali Behrouz and Zeman Li and Praneeth Kacham and Majid Daliri and Yuan Deng and Peilin Zhong and Meisam Razaviyayn and Vahab Mirrokni},
-      year={2025},
-      url={https://arxiv.org/abs/2505.23735}
-}
-
 @misc{behrouz2025itsconnectedjourneytesttime,
       title={It's All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization}, 
       author={Ali Behrouz and Meisam Razaviyayn and Peilin Zhong and Vahab Mirrokni},
       year={2025},
       url={https://arxiv.org/abs/2504.13173}
+}
+
+@misc{behrouz2025atlaslearningoptimallymemorize,
+      title={ATLAS: Learning to Optimally Memorize the Context at Test Time}, 
+      author={Ali Behrouz and Zeman Li and Praneeth Kacham and Majid Daliri and Yuan Deng and Peilin Zhong and Meisam Razaviyayn and Vahab Mirrokni},
+      year={2025},
+      url={https://arxiv.org/abs/2505.23735}
 }
 ```
 
