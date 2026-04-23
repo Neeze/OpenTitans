@@ -12,7 +12,7 @@
 
 **Democratizing Test-Time Memorization and Neural Memory Architectures.**
 
-[Introduction](#-introduction) • [Features](#-key-features) • [Quick Start](#-quick-start) • [Usage](#-usage) • [Citations](#-citations--acknowledgements)
+[Introduction](#-introduction) • [Documentation](./docs/README.md) • [Features](#-key-features) • [Quick Start](#-quick-start) • [Citations](#-citations--acknowledgements)
 
 </div>
 
@@ -31,6 +31,17 @@ Inspired by groundbreaking research from Google and other top labs, OpenTitans f
 *   **🛠️ Test-Time Training (TTT)**: Seamless integration of models that optimize their parameters as they consume context.
 *   **🧩 Modular & Extensible**: A clean, object-oriented API that allows you to swap memory models, poolers, and norms with ease.
 *   **📊 Performance Benchmarks**: Built-in tools to measure latency, throughput, and memory efficiency on modern GPUs.
+
+---
+
+## 📖 Documentation
+
+For detailed information on how to use OpenTitans, please refer to our **[Documentation Index](./docs/README.md)**.
+
+*   **[Installation Guide](./docs/Installation.md)**: Setup and dependency management.
+*   **[Quickstart](./docs/Quickstart.md)**: Your first model in 5 minutes.
+*   **[Titans Variants](./docs/Titans_Variants.md)**: Understanding MAC, MAG, and MAL.
+*   **[Neural Memory](./docs/Neural_Memory.md)**: Customizing memory models and fast-weight updates.
 
 ---
 
