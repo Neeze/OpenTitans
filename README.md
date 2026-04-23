@@ -24,15 +24,6 @@ Inspired by groundbreaking research from Google and other top labs, OpenTitans f
 
 ---
 
-## 🚀 Key Features
-
-*   **🧠 Neural Memory Modules**: Sophisticated implementations of memory systems that evolve during inference.
-*   **⚡ Associative Scan**: Optimized support for fast sequence processing, breaking the linear bottleneck.
-*   **🛠️ Test-Time Training (TTT)**: Seamless integration of models that optimize their parameters as they consume context.
-*   **🧩 Modular & Extensible**: A clean, object-oriented API that allows you to swap memory models, poolers, and norms with ease.
-*   **📊 Performance Benchmarks**: Built-in tools to measure latency, throughput, and memory efficiency on modern GPUs.
-
----
 
 ## 📖 Documentation
 
