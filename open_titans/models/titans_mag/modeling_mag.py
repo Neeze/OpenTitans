@@ -10,7 +10,7 @@ from axial_positional_embedding import ContinuousAxialPositionalEmbedding
 from hyper_connections import mc_get_init_and_expand_reduce_stream_functions
 
 from ..modeling_utils import (
-    PreTrainedModel, exists, default, GEGLU, FeedForward, pack_with_inverse
+    PreTrainedModel, exists, default, GEGLU, FeedForward, pack_with_inverse, TitansCausalLMOutputWithPast
 )
 from ...modules import NeuralMemory
 from .configuration_mag import TitansMAGConfig
@@ -194,6 +194,15 @@ class TitansMAGModel(PreTrainedModel):
         logits = self.to_logits(x)
         
         if not return_loss:
-            return logits
+            return TitansCausalLMOutputWithPast(
+                loss=None,
+                logits=logits,
+                past_key_values=None
+            )
             
-        return F.cross_entropy(rearrange(logits, 'b n l -> b l n'), labels)
+        loss = F.cross_entropy(rearrange(logits, 'b n l -> b l n'), labels)
+        return TitansCausalLMOutputWithPast(
+            loss=loss,
+            logits=logits,
+            past_key_values=None
+        )

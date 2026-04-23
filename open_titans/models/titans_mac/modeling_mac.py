@@ -33,6 +33,7 @@ from ..modeling_utils import (
     min_p_filter,
     GEGLU,
     FeedForward,
+    TitansCausalLMOutputWithPast,
 )
 from .configuration_mac import TitansMACConfig
 
@@ -289,7 +290,8 @@ class TitansMACModel(PreTrainedModel):
             factorized_pos_emb = self.axial_pos_emb(axial_dims, return_factorized=True)
         with tqdm.tqdm(total=sample_num_times, disable=not show_progress) as pbar:
             while out.shape[-1] < seq_len:
-                logits, next_cache = self.forward(out, disable_flex_attn=True, cache=cache, return_cache=True, factorized_pos_emb=factorized_pos_emb)
+                out_obj = self.forward(out, disable_flex_attn=True, cache=cache, return_cache=True, factorized_pos_emb=factorized_pos_emb)
+                logits, next_cache = out_obj.logits, out_obj.past_key_values
                 if use_cache:
                     cache = next_cache
                 if not exists(logits):
@@ -383,7 +385,7 @@ class TitansMACModel(PreTrainedModel):
             next_cache = (inference_seq_index + 1, next_kv_caches, next_neural_mem_caches)
             is_longterm_mem = self.seq_index_is_longterm(inference_seq_index)
             if is_inferencing and is_longterm_mem:
-                return None, next_cache
+                return TitansCausalLMOutputWithPast(loss=None, logits=None, past_key_values=next_cache)
         x = self.reduce_streams(x)
         if not is_inferencing:
             x, inverse_segment = pad_and_segment_with_inverse(x, attn_window_size, inverse_remove_pad=False)
@@ -395,6 +397,8 @@ class TitansMACModel(PreTrainedModel):
         logits = self.to_logits(x)
         if not return_loss:
             if not return_cache:
-                return logits
-            return logits, next_cache
-        return F.cross_entropy(rearrange(logits, 'b n l -> b l n'), labels)
+                return TitansCausalLMOutputWithPast(loss=None, logits=logits, past_key_values=None)
+            return TitansCausalLMOutputWithPast(loss=None, logits=logits, past_key_values=next_cache)
+        
+        loss = F.cross_entropy(rearrange(logits, 'b n l -> b l n'), labels)
+        return TitansCausalLMOutputWithPast(loss=loss, logits=logits, past_key_values=None)
