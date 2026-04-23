@@ -1,13 +1,4 @@
 class TitansMALConfig:
-    """Configuration for the Titans Memory-as-a-Layer (MAL) model.
-
-    In MAL, neural memory acts as a sequential layer *before* attention,
-    compressing long-range history so the sliding-window attention only
-    needs to handle local dependencies.
-
-    Data flow per block:  x → Memory(x) → SlidingWindowAttn → FFN → output
-    """
-
     def __init__(
         self,
         vocab_size=50257,
