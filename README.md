@@ -42,6 +42,12 @@ Inspired by groundbreaking research from Google and other top labs, OpenTitans f
 > We recommend using a virtual environment (venv or conda) for the best experience.
 
 ```bash
+pip install open-titans
+```
+
+#### Development Installation
+
+```bash
 # Clone the repository
 git clone https://github.com/Neeze/OpenTitans.git
 cd OpenTitans

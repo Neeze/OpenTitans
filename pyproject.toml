@@ -1,6 +1,6 @@
 [project]
 name = "open-titans"
-version = "0.0.1"
+version = "0.0.2"
 description = "Memory-Augmented Sequence Models in Pytorch"
 authors = [
     { name = "Neeze", email = "nampvh4436@gmail.com" }
