@@ -16,7 +16,10 @@ Welcome to the OpenTitans documentation. This project provides a framework for r
 4.  **[Titans Variants](./Titans_Variants.md)**
     *   Deep dive into MAC, MAG, and MAL architectures.
     *   Code snippets and comparison.
-5.  **[Neural Memory & Custom Models](./Neural_Memory.md)**
+5.  **[MIRAS Framework](./Miras.md)**
+    *   Online Optimization, Attentional Bias, and Retention.
+    *   YAAD, MONETA, and MEMORA variants.
+6.  **[Neural Memory & Custom Models](./Neural_Memory.md)**
     *   Understanding the fast-weight update mechanism.
     *   Defining your own neural memory architectures.
 

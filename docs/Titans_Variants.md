@@ -54,6 +54,24 @@ config = TitansMALConfig(num_hidden_layers=12, neural_memory_layers=[1, 4, 8, 12
 model = TitansMALModel(config)
 ```
 
+---
+
+## 4. MIRAS (Online Optimization)
+
+The **MIRAS** framework unifies sequence modeling through the lens of online optimization. It replaces static update rules with a **Learning-Retaining** objective.
+
+### Key Features
+-   **Adaptive Objectives**: Uses specialized loss functions (Huber, KL, Lp) for internal updates.
+-   **Stability & Robustness**: Variants like YAAD and MEMORA provide mathematical guarantees for noise robustness and sequence stability.
+-   **Architecture**: `MirasModel` (with YAAD, MONETA, MEMORA sub-variants)
+
+```python
+from open_titans.models.miras import create_miras_model
+
+# Robust memory variant
+model = create_miras_model("yaad")
+```
+
 ## ⚖️ Which one to use?
 
 | Variant | Best For | Complexity |
@@ -61,3 +79,4 @@ model = TitansMALModel(config)
 | **MAC** | Explicit long-term context recall | Medium |
 | **MAG** | Dynamic filtering of attention features | High |
 | **MAL** | General purpose memory-augmented modeling | Low |
+| **MIRAS** | Robustness, sparsity, or infinite stability | High |
