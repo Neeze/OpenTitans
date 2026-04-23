@@ -1,4 +1,3 @@
-# OpenTitans: Advanced Memory-Augmented Models
 __version__ = "0.0.1"
 
 from .configs.configuration_titans import TitansConfig
