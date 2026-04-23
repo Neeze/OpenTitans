@@ -3,6 +3,42 @@ import torch.nn as nn
 import torch.nn.functional as F
 from math import ceil
 from einops import rearrange, pack, unpack
+from dataclasses import dataclass
+from typing import Optional, Any
+
+try:
+    from transformers.utils import ModelOutput
+except ImportError:
+    @dataclass
+    class ModelOutput:
+        pass
+
+def auto_docstring(*args, **kwargs):
+    def decorator(cls):
+        return cls
+    return decorator
+
+@dataclass
+@auto_docstring(
+    custom_intro="""
+    Base class for Titans causal language model (or autoregressive) outputs.
+    """
+)
+class TitansCausalLMOutputWithPast(ModelOutput):
+    r"""
+    loss (`torch.FloatTensor` of shape `(1,)`, *optional*, returned when `labels` is provided):
+        Language modeling loss (for next-token prediction).
+    logits (`torch.FloatTensor` of shape `(batch_size, sequence_length, config.text_config.vocab_size)`):
+        Prediction scores of the language modeling head (scores for each vocabulary token before SoftMax).
+    past_key_values (`Cache`, *optional*, returned when `use_cache=True` is passed or when `config.use_cache=True`):
+        It is a [`~cache_utils.Cache`] instance. For more details, see our [kv cache guide](https://huggingface.co/docs/transformers/en/kv_cache).
+
+        Contains pre-computed hidden-states (key and values in the self-attention blocks) that can be used (see
+        `past_key_values` input) to speed up sequential decoding.
+    """
+    loss: Optional[torch.FloatTensor] = None
+    logits: Optional[torch.FloatTensor] = None
+    past_key_values: Optional[Any] = None
 
 class PreTrainedModel(nn.Module):
     """Base class for all models."""

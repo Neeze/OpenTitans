@@ -5,6 +5,7 @@ from functools import partial
 from itertools import zip_longest
 from typing import Callable
 
+import math
 import einx
 import torch
 from torch import cat, stack
@@ -502,7 +503,6 @@ class NeuralMemory(Module):
         return_surprises: bool = False,
         ttt_batch_size: int | None = None,
     ):
-        import math
 
         is_multi_input = self.qkv_receives_diff_views
 
