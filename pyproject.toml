@@ -1,7 +1,7 @@
 [project]
 name = "open-titans"
 version = "0.0.1"
-description = "Titans"
+description = "Memory-Augmented Sequence Models in Pytorch"
 authors = [
     { name = "Neeze", email = "nampvh4436@gmail.com" }
 ]
@@ -13,15 +13,22 @@ keywords = [
     'deep learning',
     'test time training',
     'linear attention',
-    'memory',
+    'memory-augmented models',
+    'neural memory',
+    'titans',
+    'transformers',
 ]
 
-classifiers=[
+classifiers = [
     'Development Status :: 4 - Beta',
+    'Intended Audience :: Science/Research',
     'Intended Audience :: Developers',
     'Topic :: Scientific/Engineering :: Artificial Intelligence',
     'License :: OSI Approved :: MIT License',
-    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Operating System :: OS Independent',
 ]
 
 dependencies = [
@@ -39,6 +46,14 @@ dependencies = [
     "x-transformers"
 ]
 
+[project.urls]
+"Homepage" = "https://github.com/Neeze/OpenTitans"
+"Bug Tracker" = "https://github.com/Neeze/OpenTitans/issues"
+"Source Code" = "https://github.com/Neeze/OpenTitans"
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["open_titans*"]
