@@ -37,6 +37,8 @@ def _build_bias_fn(bias_type: str, config: MirasConfig):
     return AttentionalBias(bias_type=bias_type, **kwargs)
 
 
+from ...modules.memory.update_rule import MemoryUpdateRule
+
 class MirasLayer(nn.Module):
     def __init__(self, config: MirasConfig, neural_memory_model: nn.Module | None = None):
         super().__init__()
@@ -57,12 +59,23 @@ class MirasLayer(nn.Module):
         variant_cfg = VARIANT_CONFIG[config.variant]
         bias_fn = _build_bias_fn(variant_cfg["bias_type"], config)
 
+        rule_kwargs = {}
+        if config.variant == "yaad":
+            rule_kwargs["delta"] = config.huber_delta
+            
+        update_rule = MemoryUpdateRule(
+            dim=dim,
+            rule_type=config.variant,
+            **rule_kwargs
+        )
+
         self.neural_memory = NeuralMemory(
             dim=dim,
             heads=config.mem_heads,
             chunk_size=config.chunk_size,
             store_memory_loss_fn=bias_fn,
             model=deepcopy(neural_memory_model) if neural_memory_model else None,
+            update_rule=update_rule,
             momentum=config.momentum,
             momentum_order=config.momentum_order,
             pre_rmsnorm=config.pre_rmsnorm,
