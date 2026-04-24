@@ -7,12 +7,8 @@ from torch.nn import Module, Parameter, ParameterList
 
 from einops import rearrange
 
-# functions
-
 def l2norm(t: Tensor) -> Tensor:
     return F.normalize(t, dim=-1)
-
-# norms
 
 class LayerNorm(Module):
     def __init__(self, dim: int):
@@ -28,8 +24,6 @@ class LayerNorm(Module):
 
         return self.ln(x) * (gamma + 1.0)
 
-# norm + residual wrapper, as used in original TTT paper
-
 class ResidualNorm(Module):
     def __init__(self, dim: int, model: Module):
         super().__init__()
@@ -39,8 +33,6 @@ class ResidualNorm(Module):
     def forward(self, x: Tensor) -> Tensor:
         out = self.model(x)
         return self.norm(out) + x
-
-# memory mlp proposed in TTT
 
 class MemoryMLP(Module):
     def __init__(self, dim: int, depth: int = 2, expansion_factor: float = 2.0):
@@ -68,8 +60,6 @@ class MemoryMLP(Module):
             x = x @ weight
 
         return x
-
-# memory mlp, but with gated residual + final projection
 
 class GatedResidualMemoryMLP(Module):
     def __init__(self, dim: int, depth: int = 2, expansion_factor: float = 4.0):
@@ -102,14 +92,10 @@ class GatedResidualMemoryMLP(Module):
             hidden = F.gelu(hidden)
             branch_out = hidden @ weight2
 
-            # gated residual
-
             gates = cat((branch_out, res), dim=-1) @ to_gates
             x = res.lerp(branch_out, gates.sigmoid())
 
         return x @ self.final_proj
-
-# memory mlp with factorized weights
 
 class FactorizedMemoryMLP(Module):
     def __init__(self, dim: int, depth: int = 2, k: int = 32):
@@ -140,8 +126,6 @@ class FactorizedMemoryMLP(Module):
             x = x @ weight1 @ weight2
 
         return x
-
-# an MLP modelled after the popular swiglu ff in modern transformers
 
 class MemorySwiGluMLP(Module):
     def __init__(self, dim: int, depth: int = 1, expansion_factor: float = 4.0):
@@ -178,8 +162,6 @@ class MemorySwiGluMLP(Module):
 
         return self.norm(x)
 
-# improvised attention as memory module
-
 class MemoryAttention(Module):
     def __init__(self, dim: int, scale: float = 8.0, expansion_factor: float = 2.0):
         super().__init__()
@@ -188,11 +170,11 @@ class MemoryAttention(Module):
 
         self.weights = ParameterList(
             [
-                Parameter(torch.randn(dim, dim)),  # queries
-                Parameter(torch.randn(dim, dim)),  # keys
-                Parameter(torch.randn(dim, dim)),  # values
-                Parameter(torch.randn(dim, dim_ff_hidden)),  # ff w1
-                Parameter(torch.randn(dim_ff_hidden, dim)),  # ff w2
+                Parameter(torch.randn(dim, dim)),
+                Parameter(torch.randn(dim, dim)),
+                Parameter(torch.randn(dim, dim)),
+                Parameter(torch.randn(dim, dim_ff_hidden)),
+                Parameter(torch.randn(dim_ff_hidden, dim)),
             ]
         )
 
@@ -207,8 +189,6 @@ class MemoryAttention(Module):
         v = x @ wv
 
         attn_out = F.scaled_dot_product_attention(q, k, v, scale=self.scale, is_causal=True)
-
-        # parallel attention + feedforward block
 
         h = F.gelu(x @ ffw1)
         ff_out = h @ ffw2

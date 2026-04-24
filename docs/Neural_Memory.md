@@ -4,9 +4,60 @@ The **Neural Memory** module is the heart of the OpenTitans framework. It implem
 
 ## 🛠️ How it Works
 
-Unlike standard attention which uses a KV-cache, Neural Memory uses a small neural network (an MLP) whose weights are updated during the forward pass. 
+Unlike standard attention which uses a KV-cache, Neural Memory uses a small neural network whose weights are updated during the forward pass. 
 - **Storage**: When the model sees new data, it performs a small number of gradient descent steps on the neural memory's weights to "memorize" the new information.
 - **Retrieval**: To recall information, the model passes a query through this same neural network.
+
+## 🏛️ Available Memory Models
+
+OpenTitans provides several built-in architectures for the neural memory:
+
+| Model | Description |
+| :--- | :--- |
+| `MemoryMLP` | A standard multi-layer perceptron using manual matrix multiplications for efficient updates. |
+| `GatedResidualMemoryMLP` | An MLP with gated residual connections and final projection for increased capacity. |
+| `FactorizedMemoryMLP` | Uses factorized weights to reduce the number of parameters per chunk. |
+| `MemorySwiGluMLP` | An MLP variant using the SwiGLU activation function, common in modern LLMs. |
+| `MemoryAttention` | Implements an internal attention mechanism within the memory module itself. |
+
+### 🛠️ Wrappers
+
+- `ResidualNorm`: A wrapper that adds a residual connection and `LayerNorm` around any memory model.
+- `LayerNorm`: A custom normalization layer designed specifically for neural memory updates.
+
+## ⚙️ Configuration
+
+You can configure the neural memory in two ways when initializing a Titans model:
+
+### 1. Using Default MLP with Kwargs
+By default, `MemoryMLP` is used. You can configure its depth and expansion factor via `neural_memory_kwargs`:
+
+```python
+model = TitansMACModel(
+    config,
+    neural_memory_kwargs={
+        "default_model_kwargs": {
+            "depth": 3,
+            "expansion_factor": 4.0
+        }
+    }
+)
+```
+
+### 2. Passing a Custom Model Instance
+For more advanced architectures, instantiate the memory model and pass it as `neural_memory_model`:
+
+```python
+from open_titans.modules.memory import GatedResidualMemoryMLP
+
+# Important: Use dim_head from your config
+custom_mem = GatedResidualMemoryMLP(dim=64, depth=2, expansion_factor=4.0)
+
+model = TitansMACModel(
+    config,
+    neural_memory_model=custom_mem
+)
+```
 
 ## 🎨 Defining a Custom Memory Model
 
@@ -40,31 +91,14 @@ class DeepMemoryMLP(nn.Module):
 
     def forward(self, x):
         return self.net(x)
-
-# Usage:
-from open_titans.models.titans_mac import TitansMACModel, TitansMACConfig
-
-config = TitansMACConfig(hidden_size=256, dim_head=64)
-custom_mem = DeepMemoryMLP(dim=64) # Use dim_head
-
-model = TitansMACModel(config, neural_memory_model=custom_mem)
 ```
 
-## ⚙️ Advanced Configuration
+## 🚀 Advanced Hyperparameters
 
-When instantiating a Titans model, you can pass additional kwargs that will be forwarded to the `NeuralMemory` module:
+Additional parameters available in `neural_memory_kwargs`:
 
-```python
-model = TitansMACModel(
-    config,
-    neural_memory_model=custom_mem,
-    momentum=True,               # Use momentum for weight updates
-    momentum_order=2,            # Second-order momentum
-    learned_momentum_combine=True # Learn how to combine momentum terms
-)
-```
-
-### Key Parameters:
-- `momentum`: Enables momentum-based updates for the neural memory weights.
-- `adaptive_step_transform`: A function to transform the predicted learning rate for updates.
-- `max_grad_norm`: Clips the gradients during the test-time update to ensure stability.
+- `momentum`: enables momentum-based updates (default: `True`).
+- `momentum_order`: order of momentum (default: `1`).
+- `max_grad_norm`: clips gradients during updates to ensure stability.
+- `per_parameter_lr_modulation`: allows the model to learn a per-parameter learning rate.
+- `chunk_size`: controls the frequency of weight updates.
