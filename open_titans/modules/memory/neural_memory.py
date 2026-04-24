@@ -1,24 +1,3 @@
-# MIT License
-# Copyright (c) 2025 Phil Wang
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
 # This code is adapted from:
 # https://github.com/lucidrains/titans-pytorch/blob/main/titans_pytorch/neural_memory.py
 
@@ -119,7 +98,7 @@ class NeuralMemory(Module):
         spectral_norm_surprises: bool = False,
         gated_transition: bool = False,
         mem_model_norm_add_residual: bool = True,
-        store_with_lookahead_value: bool = False,  # Tianyu Zhao and Llion Jones - https://arxiv.org/abs/2601.00671
+        store_with_lookahead_value: bool = False,
         default_model_kwargs: dict = dict(depth=2, expansion_factor=4.0),
     ):
         super().__init__()
@@ -454,7 +433,6 @@ class NeuralMemory(Module):
                     update = einsum(combine_momentums, momentums, "o b n, o b n ... -> b n ...")
 
             if self.spectral_norm_surprises:
-                # Muon - Keller Jordan et al.
                 update = newtonschulz5(update)
 
             update = self.assoc_scan(1.0 - decay_factor, update, prev=last_update, remove_prev=False)
