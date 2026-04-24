@@ -32,6 +32,7 @@ For detailed information on how to use OpenTitans, please refer to our **[Docume
 *   **[Installation Guide](./docs/Installation.md)**: Setup and dependency management.
 *   **[Quickstart](./docs/Quickstart.md)**: Your first model in 5 minutes.
 *   **[Titans Variants](./docs/Titans_Variants.md)**: Understanding MAC, MAG, and MAL.
+*   **[ATLAS Framework](./docs/Atlas.md)**: Learning to Optimally Memorize Context at Test Time.
 *   **[Neural Memory](./docs/Neural_Memory.md)**: Customizing memory models and fast-weight updates.
 
 ---
