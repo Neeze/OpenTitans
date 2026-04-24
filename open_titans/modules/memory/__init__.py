@@ -8,7 +8,7 @@ from .memory_model import (
     MemorySwiGluMLP,
     MemoryAttention,
 )
-from .update_rule import MemoryUpdateRule, UpdateRuleType, linear_update, yaad_update, memora_update, moneta_update
+from .update_rule import MemoryUpdateRule, UpdateRuleType, MomentumUpdateRule, linear_update, yaad_update, memora_update, moneta_update, ExpressiveUpdateRule, sherman_morrison_step
 
 __all__ = [
     "NeuralMemory",
@@ -22,9 +22,12 @@ __all__ = [
     "MemorySwiGluMLP",
     "MemoryAttention",
     "MemoryUpdateRule",
+    "MomentumUpdateRule",
     "UpdateRuleType",
     "linear_update",
     "yaad_update",
     "memora_update",
     "moneta_update",
+    "ExpressiveUpdateRule",
+    "sherman_morrison_step",
 ]

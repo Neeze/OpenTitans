@@ -6,6 +6,9 @@ from dataclasses import dataclass
 from typing import Optional
 
 import torch
+import pytest
+from open_titans.modules.memory.neural_memory import NeuralMemory, MomentumUpdateRule
+from open_titans.modules.memory.update_rule import ExpressiveUpdateRule
 
 
 @dataclass
@@ -182,6 +185,36 @@ def run_correctness_check(device: torch.device):
         out2, state2 = model(x, state=state)
     assert out2.shape == x.shape, f"stateful shape mismatch: {out2.shape}"
     print(f"  [correctness/{device}] stateful forward shape {out2.shape} ✓")
+
+
+def test_default_fallback():
+    # Test Default Fallback: Instantiate NeuralMemory() with no update rule provided. 
+    # Verify that it defaults to Momentum and the forward pass outputs match.
+    model = NeuralMemory(dim=32, heads=2, chunk_size=4)
+    assert isinstance(model.update_rule, MomentumUpdateRule), "Default update_rule should be MomentumUpdateRule"
+    
+    x = torch.randn(1, 16, 32)
+    out, state = model(x)
+    
+    assert out.shape == x.shape, "Shape mismatch for default fallback"
+    assert not torch.isnan(out).any(), "NaN found in default fallback output"
+
+def test_expressive_injection():
+    # Test Expressive Injection: Instantiate NeuralMemory(update_rule=ExpressiveUpdateRule(...)). 
+    # Verify that the forward pass executes without shape mismatch errors.
+    expressive_rule = ExpressiveUpdateRule(dim_in=32)
+    model = NeuralMemory(
+        dim=32, heads=2, chunk_size=4, update_rule=expressive_rule,
+        default_model_kwargs=dict(depth=1, expansion_factor=1.0)
+    )
+    
+    assert model.update_rule is expressive_rule, "update_rule was not properly injected"
+    
+    x = torch.randn(1, 16, 32)
+    out, state = model(x)
+    
+    assert out.shape == x.shape, "Shape mismatch for expressive injection"
+    assert not torch.isnan(out).any(), "NaN found in expressive injection output"
 
 
 CPU_CONFIGS = [

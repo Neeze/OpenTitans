@@ -63,10 +63,13 @@ def _pair(v):
     return (v, v) if not isinstance(v, tuple) else v
 
 
+from .update_rule import MomentumUpdateRule
+
 class NeuralMemory(Module):
     def __init__(
         self,
         dim: int,
+        update_rule: Module | None = None,
         chunk_size: int | tuple[int, int] = 1,
         batch_size: int | None = None,
         dim_head: int | None = None,
@@ -204,27 +207,21 @@ class NeuralMemory(Module):
             adaptive_step_transform = partial(default_adaptive_step_transform, max_lr=default_step_transform_max_lr)
         self.adaptive_step_transform = adaptive_step_transform
 
-        self.to_momentum = (
-            Sequential(
-                nn.Linear(dim, heads * momentum_order),
-                Rearrange("b n (h o) -> o (b h) n 1", o=momentum_order),
+        self.update_rule = default(
+            update_rule,
+            MomentumUpdateRule(
+                dim=dim,
+                heads=heads,
+                momentum=momentum,
+                momentum_order=momentum_order,
+                learned_momentum_combine=learned_momentum_combine,
+                learned_combine_include_zeroth=learned_combine_include_zeroth,
+                use_accelerated_scan=use_accelerated_scan,
+                spectral_norm_surprises=spectral_norm_surprises,
+                init_momentum_bias=init_momentum_bias,
+                init_decay_bias=init_decay_bias,
             )
-            if momentum
-            else None
         )
-        self.momentum_order = momentum_order
-        self.to_learned_momentum_combine = None
-
-        if learned_momentum_combine:
-            assert momentum
-            assert momentum_order > 1
-            effective_order = momentum_order + 1 if learned_combine_include_zeroth else momentum_order
-            self.to_learned_momentum_combine = Sequential(
-                nn.Linear(dim, heads * effective_order),
-                Rearrange("b n (h o) -> o (b h) n", h=heads),
-                nn.Softmax(dim=0),
-            )
-            self.learned_combine_include_zeroth = learned_combine_include_zeroth
 
         self.to_layer_modulation = (
             Sequential(
@@ -250,10 +247,6 @@ class NeuralMemory(Module):
         self.max_grad_norm = max_grad_norm
         self.spectral_norm_surprises = spectral_norm_surprises
 
-        self.to_decay_factor = Sequential(
-            nn.Linear(dim, heads),
-            Rearrange("b n h -> (b h) n 1"),
-        )
 
         self.transition_gate = nn.Parameter(torch.tensor(-5.0)) if gated_transition else None
 
@@ -262,17 +255,6 @@ class NeuralMemory(Module):
             nn.init.zeros_(linear.weight)
             nn.init.constant_(linear.bias, init_adaptive_step_bias)
 
-        if exists(init_momentum_bias):
-            linear = self.to_momentum[0]
-            nn.init.zeros_(linear.weight)
-            nn.init.constant_(linear.bias, init_momentum_bias)
-
-        if exists(init_decay_bias):
-            linear = self.to_decay_factor[0]
-            nn.init.zeros_(linear.weight)
-            nn.init.constant_(linear.bias, init_decay_bias)
-
-        self.use_accelerated_scan = use_accelerated_scan
         self.register_buffer("zero", torch.tensor(0.0), persistent=False)
 
     @property
@@ -285,10 +267,13 @@ class NeuralMemory(Module):
         return repeat_dict_values(self.memory_model_parameter_dict, "... -> bh ...", bh=batch * self.heads)
 
     def init_momentum(self, batch: int):
+        if not (isinstance(self.update_rule, MomentumUpdateRule) and self.update_rule.has_momentum):
+            return None
+
         zeros = self.memory_model_parameter_dict.clone().zero_()
         if self.per_head_learned_parameters:
-            return repeat_dict_values(zeros, "h ... -> o (b h) ...", b=batch, o=self.momentum_order)
-        return repeat_dict_values(zeros, "... -> o bh ...", bh=batch * self.heads, o=self.momentum_order)
+            return repeat_dict_values(zeros, "h ... -> o (b h) ...", b=batch, o=self.update_rule.momentum_order)
+        return repeat_dict_values(zeros, "... -> o bh ...", bh=batch * self.heads, o=self.update_rule.momentum_order)
 
     def store_memories(
         self,
@@ -326,20 +311,20 @@ class NeuralMemory(Module):
 
         adaptive_lr = self.adaptive_step_transform(self.to_adaptive_step(seq))
         chunked_seq = self.reduce_to_chunk_rep(seq, chunk_size=chunk_size)
-        decay_factor = self.to_decay_factor(chunked_seq).sigmoid()
-
         need_layer_lr_mod = exists(self.to_layer_modulation) and num_chunks > 0
-        has_momentum = exists(self.to_momentum)
-        learned_combine = False
-
-        if has_momentum:
-            adaptive_momentum = self.to_momentum(chunked_seq).sigmoid()
-            learned_combine = exists(self.to_learned_momentum_combine)
-            if learned_combine:
-                combine_momentums = self.to_learned_momentum_combine(chunked_seq)
 
         if need_layer_lr_mod:
             layer_lr_mod = self.to_layer_modulation(chunked_seq) * self.max_mem_layer_modulation
+            
+        kwargs = {}
+        is_momentum = isinstance(self.update_rule, MomentumUpdateRule)
+        if is_momentum:
+            adaptive_momentum, combine_momentums, decay_factor = self.update_rule.precompute(chunked_seq)
+            kwargs = {
+                'adaptive_momentum': adaptive_momentum,
+                'combine_momentums': combine_momentums,
+                'decay_factor': decay_factor,
+            }
 
         keys = self.k_norm(self.split_kv_heads(self.to_keys(seq)))
         values = self.split_kv_heads(self.to_values(values_seq))
@@ -409,35 +394,45 @@ class NeuralMemory(Module):
         next_last_update = TensorDict()
         next_last_momentum = TensorDict()
 
-        for (param_name, surprise), (_, last_update) in zip(surprises.items(), past_last_update.items()):
-            update = surprise
+        keys_reshaped = rearrange(keys, "(b h n) c d -> (b h) n c d", b=batch, h=heads, n=num_chunks)
+        
+        for (param_name, grad_l_in), (_, last_W) in zip(surprises.items(), past_last_update.items()):
+            if is_momentum:
+                kwargs['last_momentum'] = past_last_momentum[param_name] if past_last_momentum is not None else None
+                updated_W, next_last_momentum_val = self.update_rule(
+                    W_t=last_W, x_t=keys, grad_l_in=grad_l_in, **kwargs
+                )
+                updates[param_name] = updated_W
+                next_last_update[param_name] = updated_W[:, -1]
+                if next_last_momentum_val is not None:
+                    next_last_momentum[param_name] = next_last_momentum_val
+            else:
+                # Token-by-token fallback for rules that don't natively support sequence dimension
+                W_t = last_W
+                updated_W_list = [W_t]
+                
+                loss_reshaped = None
+                if unweighted_mem_model_loss is not None:
+                    loss_reshaped = rearrange(unweighted_mem_model_loss, "b h (n c) -> (b h) n c", n=num_chunks)
 
-            if has_momentum:
-                momentum = surprise
-                momentums = []
-                last_momentum = past_last_momentum[param_name]
-
-                for one_adaptive_momentum, one_last_momentum in zip_longest(adaptive_momentum, last_momentum):
-                    momentum = self.assoc_scan(one_adaptive_momentum, momentum, prev=one_last_momentum)
-                    momentums.append(momentum)
-
-                momentums = stack(momentums)
-                next_last_momentum[param_name] = momentums[:, :, -1]
-
-                if learned_combine and self.learned_combine_include_zeroth:
-                    momentums = cat((rearrange(surprise, "... -> 1 ..."), momentums), dim=0)
-
-                if not learned_combine:
-                    update = momentums[-1]
-                else:
-                    update = einsum(combine_momentums, momentums, "o b n, o b n ... -> b n ...")
-
-            if self.spectral_norm_surprises:
-                update = newtonschulz5(update)
-
-            update = self.assoc_scan(1.0 - decay_factor, update, prev=last_update, remove_prev=False)
-            updates[param_name] = update
-            next_last_update[param_name] = update[:, -1]
+                for t in range(num_chunks):
+                    # Average over the chunk dimension to get a single x_t per chunk
+                    x_t_step = keys_reshaped[:, t].mean(dim=1)  # (b*h, d)
+                    grad_l_in_step = grad_l_in[:, t]            # (b*h, ...)
+                    error_norm_step = loss_reshaped[:, t].mean(dim=1) if loss_reshaped is not None else None
+                    
+                    W_t = self.update_rule(
+                        W_t=W_t, x_t=x_t_step, grad_l_in=grad_l_in_step, error_norm=error_norm_step
+                    )
+                    
+                    if isinstance(W_t, tuple):
+                        W_t, _ = W_t
+                        
+                    updated_W_list.append(W_t)
+                
+                updated_W = stack(updated_W_list, dim=1)
+                updates[param_name] = updated_W
+                next_last_update[param_name] = updated_W[:, -1]
 
         next_state = (next_last_update, next_last_momentum)
         next_store_state = NeuralMemState(next_seq_len_index, weights, remainder, next_state, updates)

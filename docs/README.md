@@ -25,6 +25,9 @@ Welcome to the OpenTitans documentation. This project provides a framework for r
 7.  **[Neural Memory & Custom Models](./Neural_Memory.md)**
     *   Understanding the fast-weight update mechanism.
     *   Defining your own neural memory architectures.
+8.  **[Nested Learning](./Nested_Learning.md)**
+    *   Self-Referential Memory and Bi-level Optimization.
+    *   Sherman-Morrison rank-1 update.
 
 ## 🛠️ Contribution
 
