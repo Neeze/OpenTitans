@@ -95,6 +95,26 @@ OpenTitans stands on the shoulders of giants. We acknowledge the authors of the 
       year={2025},
       url={https://arxiv.org/abs/2505.23735}
 }
+
+@misc{behrouz2025nestedlearningillusiondeep,
+      title={Nested Learning: The Illusion of Deep Learning Architectures}, 
+      author={Ali Behrouz and Meisam Razaviyayn and Peilin Zhong and Vahab Mirrokni},
+      year={2025},
+      eprint={2512.24695},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2512.24695}, 
+}
+
+@misc{behrouz2026memorycachingrnnsgrowing,
+      title={Memory Caching: RNNs with Growing Memory}, 
+      author={Ali Behrouz and Zeman Li and Yuan Deng and Peilin Zhong and Meisam Razaviyayn and Vahab Mirrokni},
+      year={2026},
+      eprint={2602.24281},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2602.24281}, 
+}
 ```
 
 ---
