@@ -40,7 +40,7 @@ class SlidingWindowAttention(nn.Module):
         self.heads = heads
         self.dim_head = dim_head
 
-    def forward(self, seq, disable_flex_attn=False, output_gating=None):
+    def forward(self, seq, attention_mask=None, disable_flex_attn=False, output_gating=None):
         batch, seq_len = seq.shape[:2]
         seq = self.norm(seq)
         
@@ -70,6 +70,9 @@ class SlidingWindowAttention(nn.Module):
             
             mask = causal_mask & (is_persist | sliding_mask)
             mask = repeat(mask, 'i j -> b 1 i j', b=batch)
+            
+            if attention_mask is not None:
+                mask = mask & attention_mask.unsqueeze(1).unsqueeze(2)
             
             out, _ = self.attend(q, k, v, mask=mask)
 
@@ -146,7 +149,7 @@ class TitansMAGModel(PreTrainedModel):
         self.norm = nn.RMSNorm(config.hidden_size)
         self.to_logits = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
 
-    def forward(self, input_ids, return_loss=False, disable_flex_attn=False, labels=None):
+    def forward(self, input_ids, attention_mask=None, return_loss=False, disable_flex_attn=False, labels=None):
         x = input_ids
         if return_loss and labels is None:
             x, labels = x[:, :-1], x[:, 1:]
@@ -178,7 +181,7 @@ class TitansMAGModel(PreTrainedModel):
                 attn_out_gates = retrieved.sigmoid()
                 
             attn_in, add_attn_residual = attn_hyper_conn(x)
-            attn_out = attn(attn_in, disable_flex_attn=disable_flex_attn, output_gating=attn_out_gates)
+            attn_out = attn(attn_in, attention_mask=attention_mask, disable_flex_attn=disable_flex_attn, output_gating=attn_out_gates)
             x = add_attn_residual(attn_out)
             
             ff_in, add_ff_residual = ff_hyper_conn(x)
