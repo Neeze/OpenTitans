@@ -19,7 +19,10 @@ Welcome to the OpenTitans documentation. This project provides a framework for r
 5.  **[MIRAS Framework](./Miras.md)**
     *   Online Optimization, Attentional Bias, and Retention.
     *   YAAD, MONETA, and MEMORA variants.
-6.  **[Neural Memory & Custom Models](./Neural_Memory.md)**
+6.  **[ATLAS Architecture](./Atlas.md)**
+    *   Learning to Optimally Memorize Context at Test Time.
+    *   Muon optimization and the Omega Rule.
+7.  **[Neural Memory & Custom Models](./Neural_Memory.md)**
     *   Understanding the fast-weight update mechanism.
     *   Defining your own neural memory architectures.
 

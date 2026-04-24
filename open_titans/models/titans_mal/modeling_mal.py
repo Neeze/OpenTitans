@@ -56,7 +56,7 @@ class SlidingWindowAttention(nn.Module):
         self.num_persist_mem_tokens = num_persist_mem_tokens
         self.heads = heads
 
-    def forward(self, seq, disable_flex_attn=False):
+    def forward(self, seq, attention_mask=None, disable_flex_attn=False):
         batch, seq_len = seq.shape[:2]
         seq = self.norm(seq)
 
@@ -99,6 +99,9 @@ class SlidingWindowAttention(nn.Module):
 
             mask = causal_mask & (is_persist | sliding_mask)
             mask = repeat(mask, "i j -> b 1 i j", b=batch)
+
+            if attention_mask is not None:
+                mask = mask & attention_mask.unsqueeze(1).unsqueeze(2)
 
             out, _ = self.attend(q, k, v, mask=mask)
 
@@ -193,6 +196,7 @@ class TitansMALModel(PreTrainedModel):
     def forward(
         self,
         input_ids,
+        attention_mask=None,
         return_loss=False,
         disable_flex_attn=False,
         labels=None,
@@ -226,7 +230,7 @@ class TitansMALModel(PreTrainedModel):
                 x = add_mem_residual(retrieved)
 
             attn_in, add_attn_residual = attn_hyper_conn(x)
-            attn_out = attn(attn_in, disable_flex_attn=disable_flex_attn)
+            attn_out = attn(attn_in, attention_mask=attention_mask, disable_flex_attn=disable_flex_attn)
             x = add_attn_residual(attn_out)
 
             ff_in, add_ff_residual = ff_hyper_conn(x)

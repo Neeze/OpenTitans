@@ -75,11 +75,11 @@ class MirasLayer(nn.Module):
 
         self.ff = FeedForward(dim=dim, mult=config.intermediate_size / dim)
 
-    def forward(self, x: Tensor, mem_state=None):
+    def forward(self, x: Tensor, attention_mask: Tensor | None = None, mem_state=None):
         residual = x
         x_normed = self.norm1(x)
 
-        attn_out = self._attention(x_normed)
+        attn_out = self._attention(x_normed, attention_mask=attention_mask)
 
         retrieved, next_mem_state = self.neural_memory(x_normed, state=mem_state)
         gate = self.mem_gate(x_normed)
@@ -88,7 +88,7 @@ class MirasLayer(nn.Module):
         x = x + self.ff(self.norm2(x))
         return x, next_mem_state
 
-    def _attention(self, x: Tensor) -> Tensor:
+    def _attention(self, x: Tensor, attention_mask: Tensor | None = None) -> Tensor:
         b, n, _ = x.shape
         qkv = self.to_qkv(x)
         q, k, v = qkv.chunk(3, dim=-1)
@@ -104,6 +104,11 @@ class MirasLayer(nn.Module):
             torch.ones(n, n, device=x.device, dtype=torch.bool), diagonal=1,
         )
         attn = attn.masked_fill(causal_mask, float("-inf"))
+        
+        if attention_mask is not None:
+            pad_mask = ~attention_mask.view(b, 1, 1, n).bool()
+            attn = attn.masked_fill(pad_mask, float("-inf"))
+            
         attn = F.softmax(attn, dim=-1)
 
         out = torch.matmul(attn, v)
@@ -127,7 +132,7 @@ class MirasModel(PreTrainedModel):
         self.norm = nn.RMSNorm(config.hidden_size)
         self.to_logits = LinearNoBias(config.hidden_size, config.vocab_size)
 
-    def forward(self, input_ids: Tensor, labels: Tensor | None = None, cache=None):
+    def forward(self, input_ids: Tensor, attention_mask: Tensor | None = None, labels: Tensor | None = None, cache=None):
         b, seq_len = input_ids.shape
         positions = torch.arange(seq_len, device=input_ids.device).unsqueeze(0)
 
@@ -136,7 +141,7 @@ class MirasModel(PreTrainedModel):
         next_caches = []
         for i, layer in enumerate(self.layers):
             mem_state = cache[i] if cache is not None else None
-            x, next_mem_state = layer(x, mem_state=mem_state)
+            x, next_mem_state = layer(x, attention_mask=attention_mask, mem_state=mem_state)
             next_caches.append(next_mem_state)
 
         x = self.norm(x)
