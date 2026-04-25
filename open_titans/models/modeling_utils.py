@@ -6,12 +6,12 @@ from einops import rearrange, pack, unpack
 from dataclasses import dataclass
 from typing import Optional, Any
 
-try:
-    from transformers.utils import ModelOutput
-except ImportError:
-    @dataclass
-    class ModelOutput:
-        pass
+@dataclass
+class ModelOutput:
+    """
+    Base class for all model outputs.
+    """
+    pass
 
 def auto_docstring(*args, **kwargs):
     def decorator(cls):
@@ -56,7 +56,9 @@ class PreTrainedModel(nn.Module):
         # Placeholder for weight saving logic
         pass
 
-
+    @torch.no_grad()
+    def generate(self, input_ids, **kwargs):
+        pass
 
 def exists(v):
     return v is not None
