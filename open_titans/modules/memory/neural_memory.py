@@ -147,10 +147,11 @@ class NeuralMemory(Module):
 
         assert not exists(next(model.buffers(), None)), "model cannot have buffers for now"
 
+        device = next(model.parameters()).device if list(model.parameters()) else torch.device("cpu")
         test_shape = (3, 2, dim_head)
         with torch.no_grad():
             try:
-                out = model(torch.randn(test_shape))
+                out = model(torch.randn(test_shape, device = device))
             except Exception:
                 raise RuntimeError(f"memory model unable to accept tensor of shape {test_shape}")
             assert out.shape == test_shape, "output of memory model must match input shape"
