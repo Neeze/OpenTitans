@@ -28,7 +28,14 @@ Welcome to the OpenTitans documentation. This project provides a framework for r
 8.  **[Nested Learning](./Nested_Learning.md)**
     *   Self-Referential Memory and Bi-level Optimization.
     *   Sherman-Morrison rank-1 update.
+9.  **[Generation (Titans)](./Generation.md)**
+    *   Auto-regressive generation with memory state management.
+    *   Decoding strategies, cache architecture, and graph breaking.
+10. **[Generation (ATLAS)](./Atlas_Generation.md)**
+    *   Test-Time Training during generation.
+    *   Gradient isolation and the `enable_ttt_grad` parameter.
 
 ## Contribution
 
 We welcome contributions! Please see the [main README](../README.md) for contribution guidelines and contact information.
+

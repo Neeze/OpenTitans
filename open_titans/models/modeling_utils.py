@@ -55,11 +55,7 @@ class PreTrainedModel(nn.Module):
     def save_pretrained(self, path):
         # Placeholder for weight saving logic
         pass
-
-    @torch.no_grad()
-    def generate(self, input_ids, **kwargs):
-        pass
-
+    
 def exists(v):
     return v is not None
 

@@ -4,6 +4,7 @@ import torch.nn.functional as F
 
 from open_titans.modules.memory.retrospective import RetrospectiveMemoryBuffer
 from open_titans.optim.muon import newton_schulz5
+from open_titans.generation import AtlasGenerationMixin
 from .configuration_atlas import TitansAtlasConfig
 from ..modeling_utils import PreTrainedModel, TitansCausalLMOutputWithPast
 
@@ -191,7 +192,7 @@ class AtlasMALLayer(nn.Module):
         return x, next_mem_state, next_buffer_k, next_buffer_v
 
 
-class AtlasModel(PreTrainedModel):
+class AtlasModel(AtlasGenerationMixin, PreTrainedModel):
     def __init__(self, config: TitansAtlasConfig):
         super().__init__(config)
         self.config = config
@@ -214,6 +215,12 @@ class AtlasModel(PreTrainedModel):
         
         self.norm = nn.RMSNorm(config.hidden_size)
         self.to_logits = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
+
+    def _get_num_layers(self) -> int:
+        return len(self.layers)
+
+    def _uses_atlas_cache(self) -> bool:
+        return True
 
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor = None, labels: torch.Tensor = None, cache=None):
         b, seq_len = input_ids.shape

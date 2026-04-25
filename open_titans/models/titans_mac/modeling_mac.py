@@ -12,6 +12,7 @@ from rotary_embedding_torch import RotaryEmbedding
 from x_transformers.attend import Attend
 
 from ...modules import NeuralMemory
+from ...generation import TitansGenerationMixin
 from ..modeling_utils import (
     PreTrainedModel,
     exists,
@@ -147,7 +148,7 @@ class MACBlock(nn.Module):
         
         return x, next_mem_state
 
-class TitansMACModel(PreTrainedModel):
+class TitansMACModel(TitansGenerationMixin, PreTrainedModel):
     def __init__(self, config: TitansMACConfig, neural_memory_model: Optional[nn.Module] = None, **neural_memory_kwargs):
         super().__init__(config)
         self.config = config
@@ -172,7 +173,13 @@ class TitansMACModel(PreTrainedModel):
         self.norm = nn.RMSNorm(config.hidden_size)
         self.to_logits = LinearNoBias(config.hidden_size, config.vocab_size) 
         
-    def forward(self, input_ids, return_loss=False, return_loss_breakdown=False, disable_flex_attn=False, cache=None, return_cache=False, factorized_pos_emb=None, labels=None):
+    def _get_num_layers(self) -> int:
+        return len(self.layers)
+
+    def _uses_atlas_cache(self) -> bool:
+        return False
+
+    def forward(self, input_ids, return_loss=False, return_loss_breakdown=False, disable_flex_attn=False, cache=None, return_cache=False, factorized_pos_emb=None, labels=None, attention_mask=None):
         x = input_ids
         if return_loss and labels is None:
             x, labels = x[:, :-1], x[:, 1:]
