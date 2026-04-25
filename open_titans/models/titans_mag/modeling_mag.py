@@ -13,6 +13,7 @@ from ..modeling_utils import (
     PreTrainedModel, exists, default, GEGLU, FeedForward, pack_with_inverse, TitansCausalLMOutputWithPast
 )
 from ...modules import NeuralMemory
+from ...generation import TitansGenerationMixin
 from .configuration_mag import TitansMAGConfig
 from x_transformers.attend import Attend
 from rotary_embedding_torch import RotaryEmbedding
@@ -85,7 +86,7 @@ class SlidingWindowAttention(nn.Module):
         return out
 
 
-class TitansMAGModel(PreTrainedModel):
+class TitansMAGModel(TitansGenerationMixin, PreTrainedModel):
     def __init__(self, config: TitansMAGConfig, neural_memory_model: Module | None = None, **neural_memory_kwargs):
         super().__init__(config)
         self.config = config
@@ -149,7 +150,13 @@ class TitansMAGModel(PreTrainedModel):
         self.norm = nn.RMSNorm(config.hidden_size)
         self.to_logits = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
 
-    def forward(self, input_ids, attention_mask=None, return_loss=False, disable_flex_attn=False, labels=None):
+    def _get_num_layers(self) -> int:
+        return len(self.layers)
+
+    def _uses_atlas_cache(self) -> bool:
+        return False
+
+    def forward(self, input_ids, attention_mask=None, return_loss=False, disable_flex_attn=False, labels=None, cache=None, return_cache=False):
         x = input_ids
         if return_loss and labels is None:
             x, labels = x[:, :-1], x[:, 1:]
@@ -157,7 +164,6 @@ class TitansMAGModel(PreTrainedModel):
         batch, seq_len = x.shape[:2]
         
         x = self.token_emb(x)
-        # Note: applying axial positional embedding to the sequence before prepending persist mems
         pos_emb = self.axial_pos_emb((seq_len,))
         x = x + pos_emb
 
@@ -168,44 +174,52 @@ class TitansMAGModel(PreTrainedModel):
         mem_weight_residual = None
 
         x = self.expand_streams(x)
-        
-        for mem_hyper_conn, attn_hyper_conn, ff_hyper_conn, mem, attn, ff in self.layers:
+
+        next_caches = []
+        for layer_idx, (mem_hyper_conn, attn_hyper_conn, ff_hyper_conn, mem, attn, ff) in enumerate(self.layers):
             attn_out_gates = None
-            
+            layer_mem_state = None
+
             if exists(mem):
+                mem_state = cache[layer_idx] if cache is not None else None
                 mem_input, _ = mem_hyper_conn(x)
-                retrieved, next_neural_mem_cache = mem(mem_input, prev_weights=mem_weight_residual)
+                retrieved, next_neural_mem_cache = mem(mem_input, state=mem_state, prev_weights=mem_weight_residual)
                 if self.neural_mem_weight_residual:
                     mem_weight_residual = next_neural_mem_cache.updates
-                
+                layer_mem_state = next_neural_mem_cache
+
                 attn_out_gates = retrieved.sigmoid()
-                
+
+            next_caches.append(layer_mem_state)
+
             attn_in, add_attn_residual = attn_hyper_conn(x)
             attn_out = attn(attn_in, attention_mask=attention_mask, disable_flex_attn=disable_flex_attn, output_gating=attn_out_gates)
             x = add_attn_residual(attn_out)
-            
+
             ff_in, add_ff_residual = ff_hyper_conn(x)
             ff_out = ff(ff_in)
             x = add_ff_residual(ff_out)
-            
+
         x = self.reduce_streams(x)
-        
+
         if exists(self.persist_mems):
             _, x = inverse_pack_mems(x)
-            
+
         x = self.norm(x)
         logits = self.to_logits(x)
-        
+
+        past_kv = next_caches if return_cache else None
+
         if not return_loss:
             return TitansCausalLMOutputWithPast(
                 loss=None,
                 logits=logits,
-                past_key_values=None
+                past_key_values=past_kv,
             )
-            
+
         loss = F.cross_entropy(rearrange(logits, 'b n l -> b l n'), labels)
         return TitansCausalLMOutputWithPast(
             loss=loss,
             logits=logits,
-            past_key_values=None
+            past_key_values=past_kv,
         )
