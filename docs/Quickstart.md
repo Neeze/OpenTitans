@@ -1,8 +1,8 @@
-# ⚡ Quickstart
+# Quickstart
 
 Get up and running with OpenTitans in just a few lines of code. This guide shows how to initialize a model and perform a basic forward pass.
 
-## 🏁 Basic Usage Example
+## Basic Usage Example
 
 The following example demonstrates how to use the `TitansMACModel` (Memory as Context).
 
@@ -47,7 +47,7 @@ outputs = model(input_ids)
 print(f"Output shape: {outputs.shape}")
 ```
 
-## 🚀 Moving to GPU
+## Moving to GPU
 
 OpenTitans is optimized for CUDA. To run on a GPU, simply move the model and tensors:
 
@@ -59,7 +59,7 @@ if torch.cuda.is_available():
     print("Inference completed on GPU.")
 ```
 
-## 📈 Next Steps
+## Next Steps
 
 -   Learn how to **[Define Custom Memory Models](./Neural_Memory.md)**.
 -   Explore different **Titans Variants** in the [Titans Variants](./Titans_Variants.md) guide.

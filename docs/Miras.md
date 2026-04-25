@@ -1,8 +1,8 @@
-# 🌌 MIRAS: Online Optimization Framework
+# MIRAS: Online Optimization Framework
 
 **MIRAS** (Memory via Internal Regularized Attentional Surprise) is a unifying framework that recasts sequence modeling as a continuous **Online Optimization** problem. Instead of using static weight updates or heuristic gates, MIRAS treats the forward pass of a model as an active learning loop.
 
-## 🏗️ Core Principle: Learning-Retaining
+## Core Principle: Learning-Retaining
 
 In the MIRAS framework, the memory state $W_t$ is updated by solving an optimization problem at every time step:
 
@@ -11,7 +11,7 @@ $$W_t = \arg \min_W \left[ \ell(W; k_t, v_t) + \text{Ret}_t(W, W_{t-1}) \right]$
 1.  **Attentional Bias ($\ell$):** An internal loss function that pushes the memory to map keys $k_t$ to values $v_t$ (Learning).
 2.  **Retention Regularizer ($\text{Ret}$):** A penalty function that prevents the memory from deviating too far from its previous state (Retaining).
 
-## 🎭 Miras Variants
+## Miras Variants
 
 MIRAS provides three specialized model architectures, each derived from different optimization objectives:
 
@@ -33,7 +33,7 @@ Designed for ultra-long context (1M+ tokens).
 -   **Regularizer**: **f-Divergence** on a probability simplex.
 -   **Effect**: Mathematically constrains memory weights to stay normalized, preventing gradient explosion or state saturation across infinite horizons.
 
-## 🚀 Usage
+## Usage
 
 You can easily instantiate any MIRAS variant using the provided registry.
 
@@ -67,7 +67,7 @@ custom_mlp = nn.Sequential(
 model = create_miras_model("moneta", neural_memory_model=custom_mlp)
 ```
 
-## 🛠️ Components
+## Components
 
 If you are a researcher, you can use the modular components of MIRAS independently:
 

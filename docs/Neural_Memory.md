@@ -1,14 +1,14 @@
-# 🧠 Neural Memory & Custom Models
+# Neural Memory & Custom Models
 
 The **Neural Memory** module is the heart of the OpenTitans framework. It implements the "fast-weight" update mechanism where the model learns to store and retrieve information at test time.
 
-## 🛠️ How it Works
+## How it Works
 
 Unlike standard attention which uses a KV-cache, Neural Memory uses a small neural network whose weights are updated during the forward pass. 
 - **Storage**: When the model sees new data, it performs a small number of gradient descent steps on the neural memory's weights to "memorize" the new information.
 - **Retrieval**: To recall information, the model passes a query through this same neural network.
 
-## 🏛️ Available Memory Models
+## Available Memory Models
 
 OpenTitans provides several built-in architectures for the neural memory:
 
@@ -20,12 +20,12 @@ OpenTitans provides several built-in architectures for the neural memory:
 | `MemorySwiGluMLP` | An MLP variant using the SwiGLU activation function, common in modern LLMs. |
 | `MemoryAttention` | Implements an internal attention mechanism within the memory module itself. |
 
-### 🛠️ Wrappers
+### Wrappers
 
 - `ResidualNorm`: A wrapper that adds a residual connection and `LayerNorm` around any memory model.
 - `LayerNorm`: A custom normalization layer designed specifically for neural memory updates.
 
-## ⚙️ Configuration
+## Configuration
 
 You can configure the neural memory in two ways when initializing a Titans model:
 
@@ -59,11 +59,11 @@ model = TitansMACModel(
 )
 ```
 
-## 🎨 Defining a Custom Memory Model
+## Defining a Custom Memory Model
 
 You can provide your own architecture for the neural memory. This allows you to experiment with different capacities and update dynamics.
 
-### 📋 Requirements
+### Requirements
 
 To be compatible with `NeuralMemory`, your custom model must:
 1.  Be a `torch.nn.Module`.
@@ -71,7 +71,7 @@ To be compatible with `NeuralMemory`, your custom model must:
 3.  Accept an input tensor of shape `(batch, seq, dim_head)`.
 4.  Return an output tensor of shape `(batch, seq, dim_head)`.
 
-### 💡 Example: Deep MLP Memory
+### Example: Deep MLP Memory
 
 ```python
 import torch.nn as nn
@@ -93,7 +93,7 @@ class DeepMemoryMLP(nn.Module):
         return self.net(x)
 ```
 
-## ⚙️ Memory Write Operation (Update Rules)
+## Memory Write Operation (Update Rules)
 
 The mechanism used to update the neural memory weights during the forward pass (the "write" operation) is fully decoupled. OpenTitans provides different update rules that govern how gradients ("surprises") translate into parameter updates.
 
@@ -153,7 +153,7 @@ model = TitansMACModel(
 )
 ```
 
-## 🚀 Advanced Hyperparameters
+## Advanced Hyperparameters
 
 Additional parameters available in `neural_memory_kwargs`:
 

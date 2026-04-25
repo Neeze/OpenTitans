@@ -1,8 +1,8 @@
-# 🪐 ATLAS: Learning to Optimally Memorize the Context at Test Time
+# ATLAS: Learning to Optimally Memorize the Context at Test Time
 
 **ATLAS** is a neural architecture framework designed to optimally memorize and retrieve long-term context by treating memory updates as a highly efficient **Test-Time Optimization** process. Unlike traditional linear attention or static RNNs, ATLAS computes gradients on the fly to "learn" the local context into its persistent memory weights.
 
-## 🏗️ Core Principle: The Omega Rule
+## Core Principle: The Omega Rule
 
 ATLAS operates on a chunk-wise parallel update mechanism using the **Omega Rule**. Instead of simple additive updates, ATLAS uses second-order gradient information to minimize a local prediction error:
 
@@ -11,7 +11,7 @@ $$\mathcal{L}_{chunk} = \| \text{Mem}(k) - v \|^2$$
 1.  **Retrospective Memory Buffer**: Maintains a sliding window of recent tokens to compute accurate error signals.
 2.  **Newton-Schulz Orthogonalization**: Uses a 5-step Newton-Schulz iteration (via the `Muon` optimizer) to approximate the Hessian inverse, providing stable second-order updates without the $O(d^3)$ cost of full matrix inversion.
 
-## 🎭 ATLAS Variants
+## ATLAS Variants
 
 ATLAS provides three distinct architectural topologies to balance long-term memorization with local syntactic processing:
 
@@ -30,7 +30,7 @@ A sequential pipeline where the ATLAS layer acts as a long-term "pre-processor" 
 -   **Best for**: Tasks requiring deep reasoning over retrieved context.
 -   **Structure**: `ATLAS Layer -> SlidingWindowAttention -> SwiGLU`.
 
-## 🚀 Usage
+## Usage
 
 Instantiate an ATLAS model using the unified registry:
 
@@ -54,7 +54,7 @@ output = model(input_ids, attention_mask=mask)
 print(output.logits.shape) # (1, 128, 50257)
 ```
 
-## 🛠️ Components
+## Components
 
 ATLAS is built from highly modular components available for independent use:
 
@@ -63,7 +63,7 @@ ATLAS is built from highly modular components available for independent use:
 -   **Core Layer**: `open_titans.models.atlas.modeling_atlas.AtlasLayerBlock`
 -   **Newton-Schulz**: `open_titans.optim.muon.newton_schulz5`
 
-## 📊 Comparison with Standard Transformers
+## Comparison with Standard Transformers
 
 | Feature | Transformer | ATLAS |
 | :--- | :--- | :--- |

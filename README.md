@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌌 OpenTitans
+# OpenTitans
 **The Open-Source Framework for Memory-Augmented Sequence Models**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -13,11 +13,11 @@
 
 **Democratizing Test-Time Memorization and Neural Memory Architectures.**
 
-[Introduction](#-introduction) • [Documentation](./docs/README.md) • [Features](#-key-features) • [Quick Start](#-quick-start) • [Citations](#-citations--acknowledgements)
+[Introduction](#introduction) • [Documentation](./docs/README.md) • [Quick Start](#quick-start) • [Citations](#citations--acknowledgements) • [Contributing](#contributing)
 
 </div>
 
-## 🌟 Introduction
+## Introduction
 
 **OpenTitans** is a modular, high-performance framework designed to implement and explore the next generation of sequence models. While Transformers revolutionized AI, their quadratic context limitations have met their match. 
 
@@ -26,7 +26,7 @@ Inspired by groundbreaking research from Google and other top labs, OpenTitans f
 ---
 
 
-## 📖 Documentation
+## Documentation
 
 For detailed information on how to use OpenTitans, please refer to our **[Documentation Index](./docs/README.md)**.
 
@@ -38,7 +38,7 @@ For detailed information on how to use OpenTitans, please refer to our **[Docume
 
 ---
 
-## 📦 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -62,15 +62,15 @@ pip install -e .
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-We are looking for "Titans" to help us build! 🚀
+We are looking for "Titans" to help us build!
 
 Whether you want to implement a new paper, optimize a CUDA kernel, or just fix a typo, your contributions are welcome. Check out our [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
 
 ---
 
-## 📚 Citations & Acknowledgements
+## Citations & Acknowledgements
 
 OpenTitans stands on the shoulders of giants. We acknowledge the authors of the following papers for their foundational work:
 
@@ -119,6 +119,6 @@ OpenTitans stands on the shoulders of giants. We acknowledge the authors of the 
 
 ---
 
-## 📄 License
+## License
 
 OpenTitans is released under the **MIT License**. See [LICENSE](LICENSE) for more details.

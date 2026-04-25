@@ -1,14 +1,14 @@
-# ⚙️ Installation
+# Installation
 
 To get started with OpenTitans, ensure you have a modern Python environment and the necessary dependencies.
 
-## 📋 Requirements
+## Requirements
 
 -   **Python**: 3.10 or higher (3.12 recommended)
 -   **PyTorch**: 2.0 or higher
 -   **CUDA**: Required for GPU acceleration (NVIDIA GPU with appropriate drivers)
 
-## 📦 Installation via Pip
+## Installation via Pip
 
 You can install OpenTitans directly from PyPI:
 
@@ -18,7 +18,7 @@ pip install open-titans
 
 ---
 
-## 🛠️ Installing from Source
+## Installing from Source
 
 We recommend installing OpenTitans in a virtual environment.
 
@@ -47,7 +47,7 @@ This will install all core dependencies, including:
 -   `rotary-embedding-torch`
 -   `assoc-scan`
 
-## 🧪 Verifying the Installation
+## Verifying the Installation
 
 You can verify that everything is set up correctly by running the test suite:
 

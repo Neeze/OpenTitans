@@ -1,4 +1,4 @@
-# 🎭 Titans Variants
+# Titans Variants
 
 OpenTitans provides multiple architectural variants of the Titans model, each exploring a different way to integrate neural memory with self-attention.
 
@@ -72,7 +72,7 @@ from open_titans.models.miras import create_miras_model
 model = create_miras_model("yaad")
 ```
 
-## ⚖️ Which one to use?
+## Which one to use?
 
 | Variant | Best For | Complexity |
 | :--- | :--- | :--- |

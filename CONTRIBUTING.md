@@ -1,4 +1,4 @@
-# Contributing to OpenTitans 🌌
+# Contributing to OpenTitans
 
 First off, thank you for considering contributing to OpenTitans! It's people like you who make the open-source community such an amazing place to learn, inspire, and create.
 
@@ -6,20 +6,20 @@ OpenTitans is a research-oriented project, and we welcome contributions ranging 
 
 ---
 
-## 🧭 How Can I Contribute?
+## How Can I Contribute?
 
-### 🧪 Implementing Research Papers
+### Implementing Research Papers
 The primary goal of this repository is to provide clean, efficient implementations of Memory-Augmented Sequence Models. If you see a paper (like those mentioned in the [README](README.md)) that hasn't been fully implemented or could be improved, we'd love your help!
 
-### 🐛 Reporting Bugs
+### Reporting Bugs
 If you find a bug, please open an issue with a clear description, reproduction steps, and the expected vs. actual behavior.
 
-### 💡 Feature Requests
+### Feature Requests
 Have an idea for a new feature? Open an issue and let's discuss it!
 
 ---
 
-## 🛠️ Development Setup
+## Development Setup
 
 To get started with development:
 
@@ -37,18 +37,18 @@ To get started with development:
 
 ---
 
-## 🧑‍💻 Development Workflow
+## Development Workflow
 
-### 🌿 Branching Strategy
+### Branching Strategy
 - Always create a new branch for your work: `git checkout -b feat/your-feature-name` or `fix/issue-description`.
 - Keep branches focused on a single change.
 
-### 📝 Coding Standards
+### Coding Standards
 - **Style**: We use [Ruff](https://github.com/astral-sh/ruff) for linting and formatting. You can run `make lint` to check your code.
 - **Type Hints**: Please use Python type hints for all new code to improve maintainability.
 - **Documentation**: Add docstrings to all new classes and functions.
 
-### 🧪 Testing
+### Testing
 Before submitting a pull request, ensure all tests pass:
 ```bash
 make test
@@ -57,7 +57,7 @@ If you're adding a new feature, please include corresponding unit tests in the `
 
 ---
 
-## 🚀 Pull Request Process
+## Pull Request Process
 
 1.  Ensure your code adheres to the coding standards and passes all tests.
 2.  Update the `README.md` if your change introduces new functionality or changes existing APIs.
@@ -67,12 +67,12 @@ If you're adding a new feature, please include corresponding unit tests in the `
 
 ---
 
-## 📜 Code of Conduct
+## Code of Conduct
 We are committed to providing a welcoming and inspiring community for all. Please be respectful and constructive in all interactions.
 
 ---
 
-## 🏗️ Makefile Commands
+## Makefile Commands
 For convenience, we provide a `Makefile` with common development tasks:
 - `make install`: Install the package in editable mode.
 - `make test`: Run the test suite.
@@ -81,4 +81,4 @@ For convenience, we provide a `Makefile` with common development tasks:
 
 ---
 
-Thank you for being a part of OpenTitans! 🚀
+Thank you for being a part of OpenTitans!

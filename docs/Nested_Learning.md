@@ -1,10 +1,10 @@
-# 🧠 Nested Learning (Self-Referential Titans)
+# Nested Learning (Self-Referential Titans)
 
 **Nested Learning** (also known as Self-Referential Learning) is a paradigm introduced to dynamically learn memory during inference via **bi-level optimization**. The memory mechanism in OpenTitans supports this implicitly—allowing standard causal language modeling to trigger a meta-learning process under the hood.
 
 ---
 
-## 🔬 The Bi-Level Optimization Paradigm
+## The Bi-Level Optimization Paradigm
 
 The core idea of Nested Learning is that the neural memory acts as a dynamic parameter matrix $\mathbf{W}_t$ that is continuously optimized *during the forward pass*.
 
@@ -13,7 +13,7 @@ The core idea of Nested Learning is that the neural memory acts as a dynamic par
 
 ---
 
-## ⚙️ Native Implementation in OpenTitans
+## Native Implementation in OpenTitans
 
 In OpenTitans, Nested Learning is achieved by injecting the `ExpressiveUpdateRule` into any Titans variant (MAC, MAG, or MAL). Because the `NeuralMemory` tracks gradients through the recurrent update sequence, calling standard PyTorch `.backward()` computes the gradients for the Outer Optimizer automatically!
 
@@ -72,7 +72,7 @@ outer_optimizer.step()
 
 ---
 
-## 🪄 The "Self-Referential" Magic
+## The "Self-Referential" Magic
 
 Inside the `ExpressiveUpdateRule`, a meta-parameter weight layer named `eta_proj` actively observes the input token and outputs a scalar $\eta_t$:
 

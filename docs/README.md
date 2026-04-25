@@ -1,8 +1,8 @@
-# 📚 OpenTitans Documentation
+# OpenTitans Documentation
 
 Welcome to the OpenTitans documentation. This project provides a framework for research and development of Memory-Augmented Sequence Models.
 
-## 📖 Table of Contents
+## Table of Contents
 
 1.  **[Project Overview](./OpenTitans.md)**
     *   What is OpenTitans?
@@ -29,6 +29,6 @@ Welcome to the OpenTitans documentation. This project provides a framework for r
     *   Self-Referential Memory and Bi-level Optimization.
     *   Sherman-Morrison rank-1 update.
 
-## 🛠️ Contribution
+## Contribution
 
 We welcome contributions! Please see the [main README](../README.md) for contribution guidelines and contact information.
