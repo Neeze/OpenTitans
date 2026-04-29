@@ -8,12 +8,13 @@
 [![PyTorch 2.0+](https://img.shields.io/badge/pytorch-2.0+-ee4c2c.svg)](https://pytorch.org/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/Neeze/OpenTitans/graphs/commit-activity)
 [![PyPI version](https://img.shields.io/pypi/v/open-titans.svg)](https://pypi.org/project/open-titans/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1xxuO9_YddHXv5cUD6esV4-nIH6xWf_uk?usp=sharing)
 
 ---
 
 **Democratizing Test-Time Memorization and Neural Memory Architectures.**
 
-[Introduction](#introduction) • [Documentation](./docs/README.md) • [Quick Start](#quick-start) • [Citations](#citations--acknowledgements) • [Contributing](#contributing)
+[Introduction](#introduction) • [Documentation](./docs/README.md) • [Examples](#examples) • [Quick Start](#quick-start) • [Citations](#citations--acknowledgements) • [Contributing](#contributing)
 
 </div>
 
@@ -35,6 +36,14 @@ For detailed information on how to use OpenTitans, please refer to our **[Docume
 *   **[Titans Variants](./docs/Titans_Variants.md)**: Understanding MAC, MAG, and MAL.
 *   **[ATLAS Framework](./docs/Atlas.md)**: Learning to Optimally Memorize Context at Test Time.
 *   **[Neural Memory](./docs/Neural_Memory.md)**: Customizing memory models and fast-weight updates.
+
+---
+
+## Examples
+
+Try out OpenTitans directly in your browser:
+
+*   **[Titans MAC - Shakespeare Char-level Training](https://colab.research.google.com/drive/1pyEmiC8BG5Ec8_yrXl3cTKxT_qi6TQrX?usp=sharing)**: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1pyEmiC8BG5Ec8_yrXl3cTKxT_qi6TQrX?usp=sharing) — A minimal example training a Titans MAC model on the Tiny Shakespeare dataset.
 
 ---
 
