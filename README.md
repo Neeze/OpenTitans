@@ -84,6 +84,14 @@ Whether you want to implement a new paper, optimize a CUDA kernel, or just fix a
 OpenTitans stands on the shoulders of giants. We acknowledge the authors of the following papers for their foundational work:
 
 ```bibtex
+@software{opentitans2026,
+      author = {Neeze},
+      title = {OpenTitans: The Open-Source Framework for Memory-Augmented Sequence Models},
+      url = {https://github.com/Neeze/OpenTitans},
+      version = {1.1.0},
+      year = {2026}
+}
+
 @misc{behrouz2024titanslearningmemorizetest,
       title={Titans: Learning to Memorize at Test Time}, 
       author={Ali Behrouz and Peilin Zhong and Vahab Mirrokni},
